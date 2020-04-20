@@ -3,46 +3,33 @@ package com.yaqin.spring_boot_hw2.controller;
 import com.yaqin.spring_boot_hw2.entity.Document;
 import com.yaqin.spring_boot_hw2.exception.DocumentNotFoundException;
 import com.yaqin.spring_boot_hw2.repository.DocumentRepository;
-import com.yaqin.spring_boot_hw2.service.DocumentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.yaqin.spring_boot_hw2.response.ResponseCreate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/document")
+@RequestMapping("/storage/documents")
 public class DocumentController {
-    /*
-    @Resource
-    private DocumentService documentService;
 
-    @Autowired
-    public void setApplicationService(DocumentService documentService) {
-        this.documentService = documentService;
-    }
-
-
-    @GetMapping("/documents")
-    public ResponseEntity<List<Document>> getAllTickets() {
-        List<Document> list = documentService.listDocuments();
-        return new ResponseEntity<List<Document>>(list, HttpStatus.OK);
-    }*/
     private final DocumentRepository documentRepository;
+
+
     DocumentController(DocumentRepository documentRepository){
         this.documentRepository = documentRepository;
     }
 
-    @GetMapping("/storage/get_all_documents")
-    List<Document> all() {
-        return (List<Document>) documentRepository.findAll();
-    }
 
-    @PostMapping("/storage/documents")
-    Document newEmployee(@RequestBody Document newEmployee) {
-        return documentRepository.save(newEmployee);
+    @PostMapping
+    //@PostMapping("/storage/documents")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<ResponseCreate<String>>  newDocument(@RequestBody Document newDocument) throws InterruptedException{
+        documentRepository.save(newDocument);
+
+        return new ResponseEntity<>(new ResponseCreate<String>(HttpStatus.valueOf("CREATED").toString(), "text/plain;", newDocument.getContent()), HttpStatus.CREATED);
     }
 
     // Single item
